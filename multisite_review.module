@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Main functions and hook implementations of the Multisite Review module.
+ */
+
+/**
  * Implements hook_security_checks().
  */
 function multisite_review_security_checks() {
@@ -14,5 +19,6 @@ function multisite_review_security_checks() {
     // Specify this file because the callback is here.
     'file' => 'multisite_review',
   );
+
   return array('multisite_review' => $checks);
 }
