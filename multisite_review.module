@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * Implements hook_security_checks().
+ */
+function multisite_review_security_checks() {
+  $checks = array();
+  $checks['qa_basic'] = array(
+    'title' => t('Basic QA checks'),
+    'callback' => 'multisite_review_qa_basic',
+    'success' => t('All Multisite standards are respected'),
+    'failure' => t('Some projects do not respect Multisite standards'),
+    'module' => 'multisite_review',
+    // Specify this file because the callback is here.
+    'file' => 'multisite_review',
+  );
+  return array('multisite_review' => $checks);
+}
