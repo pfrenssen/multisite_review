@@ -11,9 +11,9 @@
  * @see hook_security_checks()
  */
 function multisite_review_qa_basic() {
-  $modules = module_list();
   $findings = array();
-  foreach ($modules as $machine_name => $module) {
+
+  foreach (module_list() as $machine_name => $module) {
     // Determine if the module is a custom module and/or a feature. This is
     // derived from the path where the module is installed.
     $path = drupal_get_path('module', $machine_name) . '/' . $machine_name . '.info';
