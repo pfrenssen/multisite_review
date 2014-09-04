@@ -11,7 +11,6 @@
  * @see hook_security_checks()
  */
 function multisite_review_qa_basic() {
-  $result = TRUE;
   $modules = module_list();
   $findings = array();
   foreach ($modules as $machine_name => $module) {
