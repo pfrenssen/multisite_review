@@ -9,94 +9,120 @@
  * Security Review callback. Performs QA for Multisite projects.
  *
  * @see hook_security_checks()
+ * @see multisite_review_security_checks()
  */
 function multisite_review_qa() {
-  $findings = array();
+  module_load_include('inc', 'multisite_review', 'multisite_review_module');
 
-  foreach (module_list() as $module) {
-    // Determine if the module is a custom module and/or a feature. This is
-    // derived from the path where the module is installed.
-    $path = drupal_get_path('module', $module) . '/' . $module . '.info';
-    $is_custom = preg_match('/\/custom\//', $path);
-    $is_feature = preg_match('/\/features\//', $path);
-    $type = $is_feature ? 'feature' : 'module';
+  $results = array();
 
-    $standards = array();
-    $standards['php_version'] = '5.2.4';
-    $standards['required_info_keys'] = array(
-      'core',
-      'description',
-      'name',
-      'package',
-      'version',
-    );
-    $standards['required_info_keys_module'] = array();
-    $standards['required_info_keys_feature'] = array('php', 'features');
-    $standards['features_api_version'] = 'api:1';
+  foreach (module_list() as $module_name) {
+    $module = new MultisiteReviewModule($module_name);
 
     // Only check custom modules.
-    if (!$is_custom) {
+    if (!$module->isCustom()) {
       continue;
     }
 
-    $info = drupal_parse_info_file($path);
-    $info_keys_to_check = array_merge($standards['required_info_keys'], $standards['required_info_keys_' . $type]);
-    foreach ($info_keys_to_check as $key) {
-      if (!array_key_exists($key, $info)) {
-        $args = array(
-          '%module' => $module,
-          '%key' => $key,
-          '%type' => $type,
-        );
-        $findings[$type][$module][$key] = t("The %type's %key is not set in %module.info file.", $args);
-      }
-    }
-    if (isset($info['php']) && $info['php'] !== $standards['php_version']) {
-      $findings[$type][$module]['php_version'] = t('Incorrect PHP version. Required: %php_version', array('%php_version' => $standards['php_version']));
-    }
-
-    // Perform some additional checks if the module is a Feature.
-    if ($is_feature) {
-      if (isset($info['features']['features_api'][0]) && $info['features']['features_api'][0] !== $standards['features_api_version']) {
-        $findings[$type][$module]['features_api_version'] = t('Incorrect Features API version. Required: %features_api_version', array('%features_api_version' => $standards['features_api_version']));
-      }
-      elseif (!isset($info['features']['features_api'][0])) {
-        $findings[$type][$module]['features_api_version'] = t('Features API version not set in %module.info file.', array('%module' => $module));
-      }
-    }
+    $results += multisite_review_check_info_file($module);
   }
 
-  return array('result' => empty($findings), 'value' => $findings);
+  return array('result' => empty($results), 'value' => $results);
 }
 
 /**
  * Help callback for Security Review. Provides help for the QA check.
  */
 function multisite_review_qa_help($check = NULL, $skipped_message = NULL) {
+  module_load_include('inc', 'multisite_review', 'multisite_review_module');
+
   $element = array();
   $element['title'] = t('Basic Multisite QA checks');
-  $element['descriptions'][] = t('Multisite standards can be found here');
+  $element['descriptions'][] = t('The modules and features on the Multisite platform should adhere to the standards outlined in the !link.', array('!link' => l(t('Guidelines for feature creation'), 'https://webgate.ec.europa.eu/fpfis/wikis/display/MULTISITE/Build+custom+features')));
 
   if (!empty($skipped_message)) {
-    $element['findings']['descriptions'][] = $skipped_message;
+    $element['results']['descriptions'][] = $skipped_message;
   }
   elseif ($check && $check['result'] == FALSE) {
-    $element['findings']['descriptions'][] = t('The following problems were identified:');
+    $results_message = t('The following problems were identified:');
+    $element['results']['descriptions'][] = $results_message;
+    $element['findings']['descriptions'][] = $results_message;
     $values = $check['value'];
-    foreach ($values as $type => $type_findings) {
-      foreach ($type_findings as $module => $findings) {
-        $title = $module . ' ' . $type;
-        $element['findings']['items'][] = array(
-          'html' => theme_item_list(array(
-            'items' => $findings,
-            'title' => $title,
-            'type' => 'ul',
-            'attributes' => array(),
-          )),
-        );
-      }
+    foreach ($values as $module_name => $results) {
+      $module = new MultisiteReviewModule($module_name);
+      $title = $module_name . ' ' . $module->type;
+      $element['findings']['items'][] = array(
+        'html' => theme_item_list(array(
+          'items' => $results,
+          'title' => $title,
+          'type' => 'ul',
+          'attributes' => array(),
+        )),
+      );
     }
   }
 
   return $element;
+}
+
+/**
+ * Performs automated review of the given module's .info file.
+ *
+ * @param MultisiteReviewModule $module
+ *   The machine name of the module to review.
+ *
+ * @return array
+ *   An array of failures.
+ */
+function multisite_review_check_info_file(MultisiteReviewModule $module) {
+  module_load_include('inc', 'multisite_review', 'multisite_review_module');
+
+  // Define a list of required keys. These are all specified in the custom
+  // feature development guidelines.
+  // @see https://webgate.ec.europa.eu/fpfis/wikis/display/MULTISITE/Build+custom+features
+  $required_keys = array(
+    'core',
+    'description',
+    'name',
+    'package',
+    'version',
+  );
+
+  // Features also require a 'features' key which lists the components that are
+  // exported in the feature.
+  if ($module->isFeature()) {
+    $required_keys[] = 'features';
+  }
+
+  $results = array();
+
+  $info = $module->getInfo();
+  $name = $module->getName();
+  foreach ($required_keys as $key) {
+    if (!array_key_exists($key, $info)) {
+      $args = array(
+        '%module' => $name,
+        '%key' => $key,
+        '%type' => $module->type,
+      );
+      $results[$name][$key] = t("The %type's %key is not set in %module.info file.", $args);
+    }
+  }
+
+  // If the module is a feature, check for some specific key/value pairs that
+  // are required according to the guidelines:
+  // - the minimum PHP version.
+  // - the Features API version.
+  if ($module->isFeature()) {
+    $required_values = array();
+    $required_values['php'] = MULTISITE_REVIEW_PHP_VERSION;
+    $required_values['features']['features_api'][0] = MULTISITE_REVIEW_FEATURES_API_VERSION;
+
+    if ($missing_values = drupal_array_diff_assoc_recursive($required_values, $info)) {
+      $missing_keys = implode(', ', array_keys($missing_values));
+      $results[$name]['missing_values'] = t('Missing required key/value pairs in the .info file: %keys', array('%keys' => $missing_keys));
+    }
+  }
+
+  return $results;
 }
