@@ -16,6 +16,8 @@ function multisite_review_qa() {
 
   $results = array();
 
+  // Loop over the modules and perform the reviews.
+  // @todo Allow the user to choose the modules and reviews.
   foreach (module_list() as $module_name) {
     $module = new MultisiteReviewModule($module_name);
 
@@ -24,7 +26,20 @@ function multisite_review_qa() {
       continue;
     }
 
-    $results += multisite_review_check_info_file($module);
+    foreach (module_invoke_all('multisite_review_reviews') as $review => $info) {
+      // Include the file if it has been specified.
+      if (!empty($info['file'])) {
+        if (is_file($file = DRUPAL_ROOT . '/' . $info['file'])) {
+          require_once $file;
+        }
+      }
+
+      // Perform the review.
+      $result = $info['callback']($module);
+      if (!empty($result)) {
+        $results[$module_name][$review] = $result;
+      }
+    }
   }
 
   return array('result' => empty($results), 'value' => $results);
@@ -47,82 +62,30 @@ function multisite_review_qa_help($check = NULL, $skipped_message = NULL) {
     $results_message = t('The following problems were identified:');
     $element['results']['descriptions'][] = $results_message;
     $element['findings']['descriptions'][] = $results_message;
+
+    // Extract and format the review results.
+    // @todo Format this as a nice table.
     $values = $check['value'];
-    foreach ($values as $module_name => $results) {
+    foreach ($values as $module_name => $reviews) {
       $module = new MultisiteReviewModule($module_name);
-      $title = $module_name . ' ' . $module->type;
-      $element['findings']['items'][] = array(
-        'html' => theme_item_list(array(
-          'items' => $results,
-          'title' => $title,
-          'type' => 'ul',
-          'attributes' => array(),
-        )),
-      );
+      foreach ($reviews as $review => $results) {
+        $title = t('@module @type @review', array(
+          '@module' => $module_name,
+          '@type' => $module->type,
+          '@review' => $review,
+        ));
+        $element['findings']['items'][] = array(
+          'html' => theme_item_list(array(
+            'items' => $results,
+            'title' => $title,
+            'type' => 'ul',
+            'attributes' => array(),
+          )),
+        );
+      }
     }
   }
 
   return $element;
 }
 
-/**
- * Performs automated review of the given module's .info file.
- *
- * @param MultisiteReviewModule $module
- *   The machine name of the module to review.
- *
- * @return array
- *   An array of failures.
- */
-function multisite_review_check_info_file(MultisiteReviewModule $module) {
-  module_load_include('inc', 'multisite_review', 'multisite_review_module');
-
-  // Define a list of required keys. These are all specified in the custom
-  // feature development guidelines.
-  // @see https://webgate.ec.europa.eu/fpfis/wikis/display/MULTISITE/Build+custom+features
-  $required_keys = array(
-    'core',
-    'description',
-    'name',
-    'package',
-    'version',
-  );
-
-  // Features also require a 'features' key which lists the components that are
-  // exported in the feature.
-  if ($module->isFeature()) {
-    $required_keys[] = 'features';
-  }
-
-  $results = array();
-
-  $info = $module->getInfo();
-  $name = $module->getName();
-  foreach ($required_keys as $key) {
-    if (!array_key_exists($key, $info)) {
-      $args = array(
-        '%module' => $name,
-        '%key' => $key,
-        '%type' => $module->type,
-      );
-      $results[$name][$key] = t("The %type's %key is not set in %module.info file.", $args);
-    }
-  }
-
-  // If the module is a feature, check for some specific key/value pairs that
-  // are required according to the guidelines:
-  // - the minimum PHP version.
-  // - the Features API version.
-  if ($module->isFeature()) {
-    $required_values = array();
-    $required_values['php'] = MULTISITE_REVIEW_PHP_VERSION;
-    $required_values['features']['features_api'][0] = MULTISITE_REVIEW_FEATURES_API_VERSION;
-
-    if ($missing_values = drupal_array_diff_assoc_recursive($required_values, $info)) {
-      $missing_keys = implode(', ', array_keys($missing_values));
-      $results[$name]['missing_values'] = t('Missing required key/value pairs in the .info file: %keys', array('%keys' => $missing_keys));
-    }
-  }
-
-  return $results;
-}

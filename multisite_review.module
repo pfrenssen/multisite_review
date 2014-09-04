@@ -32,3 +32,19 @@ function multisite_review_security_checks() {
 
   return array('multisite_review' => $checks);
 }
+
+/**
+ * Implements hook_multisite_review_reviews().
+ */
+function multisite_review_multisite_review_reviews() {
+  $path = drupal_get_path('module', 'multisite_review');
+
+  return array(
+    'info_file' => array(
+      'name' => t('Module .info file'),
+      'description' => t('Checks whether the needed information is present in the .info file.'),
+      'callback' => 'multisite_review_check_info_file',
+      'file' => $path . '/reviews/info_file.inc',
+    ),
+  );
+}
