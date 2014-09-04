@@ -97,7 +97,6 @@ function multisite_review_qa_basic_help($check = NULL, $skipped_message = NULL) 
       }
     }
   }
-  kpr($element);
 
   return $element;
 }
