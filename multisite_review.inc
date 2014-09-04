@@ -6,11 +6,11 @@
  */
 
 /**
- * Security Review callback. Performs basic QA for Multisite projects.
+ * Security Review callback. Performs QA for Multisite projects.
  *
  * @see hook_security_checks()
  */
-function multisite_review_qa_basic() {
+function multisite_review_qa() {
   $findings = array();
 
   foreach (module_list() as $module) {
@@ -70,9 +70,9 @@ function multisite_review_qa_basic() {
 }
 
 /**
- * Help callback for Security Review. Provides help for the basic QA check.
+ * Help callback for Security Review. Provides help for the QA check.
  */
-function multisite_review_qa_basic_help($check = NULL, $skipped_message = NULL) {
+function multisite_review_qa_help($check = NULL, $skipped_message = NULL) {
   $element = array();
   $element['title'] = t('Basic Multisite QA checks');
   $element['descriptions'][] = t('Multisite standards can be found here');
