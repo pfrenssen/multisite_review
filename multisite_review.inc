@@ -13,10 +13,10 @@
 function multisite_review_qa_basic() {
   $findings = array();
 
-  foreach (module_list() as $machine_name => $module) {
+  foreach (module_list() as $module) {
     // Determine if the module is a custom module and/or a feature. This is
     // derived from the path where the module is installed.
-    $path = drupal_get_path('module', $machine_name) . '/' . $machine_name . '.info';
+    $path = drupal_get_path('module', $module) . '/' . $module . '.info';
     $is_custom = preg_match('/\/custom\//', $path);
     $is_feature = preg_match('/\/features\//', $path);
     $type = $is_feature ? 'feature' : 'module';
@@ -44,24 +44,24 @@ function multisite_review_qa_basic() {
     foreach ($info_keys_to_check as $key) {
       if (!array_key_exists($key, $info)) {
         $args = array(
-          '%module' => $machine_name,
+          '%module' => $module,
           '%key' => $key,
           '%type' => $type,
         );
-        $findings[$type][$machine_name][$key] = t("The %type's %key is not set in %module.info file.", $args);
+        $findings[$type][$module][$key] = t("The %type's %key is not set in %module.info file.", $args);
       }
     }
     if (isset($info['php']) && $info['php'] !== $standards['php_version']) {
-      $findings[$type][$machine_name]['php_version'] = t('Incorrect PHP version. Required: %php_version', array('%php_version' => $standards['php_version']));
+      $findings[$type][$module]['php_version'] = t('Incorrect PHP version. Required: %php_version', array('%php_version' => $standards['php_version']));
     }
 
     // Perform some additional checks if the module is a Feature.
     if ($is_feature) {
       if (isset($info['features']['features_api'][0]) && $info['features']['features_api'][0] !== $standards['features_api_version']) {
-        $findings[$type][$machine_name]['features_api_version'] = t('Incorrect Features API version. Required: %features_api_version', array('%features_api_version' => $standards['features_api_version']));
+        $findings[$type][$module]['features_api_version'] = t('Incorrect Features API version. Required: %features_api_version', array('%features_api_version' => $standards['features_api_version']));
       }
       elseif (!isset($info['features']['features_api'][0])) {
-        $findings[$type][$machine_name]['features_api_version'] = t('Features API version not set in %module.info file.', array('%module' => $machine_name));
+        $findings[$type][$module]['features_api_version'] = t('Features API version not set in %module.info file.', array('%module' => $module));
       }
     }
   }
