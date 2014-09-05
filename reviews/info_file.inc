@@ -79,5 +79,19 @@ function multisite_review_check_info_file(MultisiteReviewModule $module) {
     $results['tests_missing'] = t('There are no tests added to the files[] array.');
   }
 
+  // Check that there are no dependencies on the 'php' and 'menu' modules.
+  foreach (array('menu', 'php') as $dependency) {
+    if (!empty($info['dependencies']) && in_array($dependency, $info['dependencies'])) {
+      $results[] = t('The dependency on the %dependency module should be removed.', array(
+        '%dependency' => $dependency,
+      ));
+    }
+  }
+
+  // Check that there is no "tags" taxonomy exported.
+  if (!empty($info['features']['taxonomy']) && in_array('tags', $info['features']['taxonomy'])) {
+    $results[] = t('The "tags" vocabulary should not be exported.');
+  }
+
   return $results;
 }
