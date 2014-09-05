@@ -64,5 +64,20 @@ function multisite_review_check_info_file(MultisiteReviewModule $module) {
     }
   }
 
+  // Check if the module has at least one test.
+  $has_tests = FALSE;
+  if (array_key_exists('files', $info)) {
+    foreach ($info['files'] as $file) {
+      if (substr($file, -5) === '.test') {
+        $has_tests = TRUE;
+        break;
+      }
+    }
+  }
+
+  if (!$has_tests) {
+    $results['tests_missing'] = t('There are no tests added to the files[] array.');
+  }
+
   return $results;
 }
