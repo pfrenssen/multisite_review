@@ -46,5 +46,11 @@ function multisite_review_multisite_review_reviews() {
       'callback' => 'multisite_review_check_info_file',
       'file' => $path . '/reviews/info_file.inc',
     ),
+    'tests' => array(
+      'name' => t('Tests'),
+      'description' => t('Checks whether there are automated tests.'),
+      'callback' => 'multisite_review_check_tests',
+      'file' => $path . '/reviews/tests.inc',
+    ),
   );
 }
