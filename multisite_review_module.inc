@@ -43,8 +43,8 @@ class MultisiteReviewModule {
    *   The name of the module.
    */
   public function __construct($module_name) {
-    $this->path = drupal_get_path('module', $module_name) . '/' . $module_name . '.info';
-    $this->info = drupal_parse_info_file($this->path);
+    $this->path = drupal_get_path('module', $module_name);
+    $this->info = drupal_parse_info_file($this->path . '/' . $module_name . '.info');
     $this->name = $module_name;
   }
 
