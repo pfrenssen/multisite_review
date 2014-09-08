@@ -46,6 +46,12 @@ function multisite_review_multisite_review_reviews() {
       'callback' => 'multisite_review_check_exported_fields',
       'file' => $path . '/reviews/exported_fields.inc',
     ),
+    'features_components' => array(
+      'name' => t('Features components'),
+      'description' => t('Checks whether no blacklisted components of the Features module are exported.'),
+      'callback' => 'multisite_review_check_features_components',
+      'file' => $path . '/reviews/features_components.inc',
+    ),
     'info_file' => array(
       'name' => t('Module .info file'),
       'description' => t('Checks whether the needed information is present in the .info file.'),
