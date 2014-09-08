@@ -88,4 +88,3 @@ function multisite_review_qa_help($check = NULL, $skipped_message = NULL) {
 
   return $element;
 }
-

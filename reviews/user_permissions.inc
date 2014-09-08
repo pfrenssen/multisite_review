@@ -74,4 +74,3 @@ function multisite_review_check_exported_user_permissions(MultisiteReviewModule 
 
   return $failures;
 }
-
