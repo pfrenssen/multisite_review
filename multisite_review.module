@@ -40,6 +40,12 @@ function multisite_review_multisite_review_reviews() {
   $path = drupal_get_path('module', 'multisite_review');
 
   return array(
+    'icon' => array(
+      'name' => t('Icon'),
+      'description' => t('Checks whether features have an icon.'),
+      'callback' => 'multisite_review_check_icon',
+      'file' => $path . '/reviews/icon.inc',
+    ),
     'exported_fields' => array(
       'name' => t('Exported fields'),
       'description' => t('Checks whether exported fields conform to the specifications.'),
