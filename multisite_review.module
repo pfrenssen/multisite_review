@@ -64,5 +64,11 @@ function multisite_review_multisite_review_reviews() {
       'callback' => 'multisite_review_check_tests',
       'file' => $path . '/reviews/tests.inc',
     ),
+    'user_permissions' => array(
+      'name' => t('User permissions'),
+      'description' => t('Checks whether no blacklisted permissions are exported.'),
+      'callback' => 'multisite_review_check_exported_user_permissions',
+      'file' => $path . '/reviews/user_permissions.inc',
+    ),
   );
 }
