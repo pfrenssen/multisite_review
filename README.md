@@ -6,13 +6,13 @@ Performs automated review of modules and features for the Multisite platform of 
 The Multisite Platform (aka FPFIS) is a web platform built on Drupal 7 that hosts websites for the EC.
 
 
-Dependencies
-============
+## Dependencies
+
 - The [Security review](https://www.drupal.org/project/security_review) module.
 
 
-Usage
-=====
+## Usage
+
 - Enable the module or feature that you want to review.
 - Log in as administrator.
 - Go to Reports > Security Review (admin/reports/security-review_en).
