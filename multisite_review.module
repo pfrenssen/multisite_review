@@ -21,10 +21,10 @@ const MULTISITE_REVIEW_FEATURES_API_VERSION = 'api:1';
 function multisite_review_security_checks() {
   $checks = array();
   $checks['multisite_review_qa'] = array(
-    'title' => t('Multisite QA checks'),
+    'title' => t('Multisite Review'),
     'callback' => 'multisite_review_qa',
-    'success' => t('All Multisite standards are respected'),
-    'failure' => t('Some projects do not respect Multisite standards'),
+    'success' => t('Multisite Review successful.'),
+    'failure' => t('Multisite Review failed.'),
     'module' => 'multisite_review',
     // Specify this file because the callback is here.
     'file' => 'multisite_review',
