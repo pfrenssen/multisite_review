@@ -109,6 +109,16 @@ class MultisiteReviewModule {
   }
 
   /**
+   * Returns the human readable module name.
+   *
+   * @return string
+   *   The human readable module name.
+   */
+  public function getHumanName() {
+    return $this->info['name'];
+  }
+
+  /**
    * Returns whether or not the module is a feature.
    *
    * @return bool
