@@ -18,23 +18,31 @@ function multisite_review_qa() {
 
   // Loop over the modules and perform the reviews.
   // @todo Allow the user to choose the modules and reviews.
+    $what_to_review = variable_get('what_to_review');
   foreach (module_list() as $module_name) {
     $module = new MultisiteReviewModule($module_name);
 
+      // If Multisite Review setting form specifies a specific module/feature only perform review on that one .
+      $specific = $module->getSpecific();
+      if(!empty($specific)) {
+      if ($module->getName() != $specific) {
+          continue;
+      }
+      }
     // Only check custom modules.
     if (!$module->isCustom()) {
       continue;
     }
-
+     // Call all reviews declared in the hook and found in reviews folder.
     foreach (module_invoke_all('multisite_review_reviews') as $review => $info) {
-      // Include the file if it has been specified.
+      // Include the .inc file from reviews folder if it has been specified.
       if (!empty($info['file'])) {
         if (is_file($file = DRUPAL_ROOT . '/' . $info['file'])) {
           require_once $file;
         }
       }
 
-      // Perform the review.
+      // Perform the review by calling all callbacks found.
       $result = $info['callback']($module);
       if (!empty($result)) {
         $results[$module_name][$review] = $result;

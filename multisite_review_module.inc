@@ -42,10 +42,13 @@ class MultisiteReviewModule {
    * @param string $module_name
    *   The name of the module.
    */
+    protected $specific;
+
   public function __construct($module_name) {
     $this->path = drupal_get_path('module', $module_name);
     $this->info = drupal_parse_info_file($this->path . '/' . $module_name . '.info');
     $this->name = $module_name;
+    $this->specific = variable_get('what_to_review', '');
   }
 
   /**
@@ -140,4 +143,10 @@ class MultisiteReviewModule {
     return (bool) preg_match('/\/custom\//', $this->path);
   }
 
+    /**
+     * @return bool
+     */
+    public function getSpecific() {
+        return $this->specific;
+    }
 }
