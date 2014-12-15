@@ -35,14 +35,17 @@ class MultisiteReviewModule {
    * @var string
    */
   protected $path;
-
+    /*
+     * Modules selected to be reviewed from the setting form
+     */
+  protected $specific;
   /**
    * Constructs a Module object.
    *
    * @param string $module_name
    *   The name of the module.
    */
-    protected $specific;
+
 
   public function __construct($module_name) {
     $this->path = drupal_get_path('module', $module_name);
@@ -144,9 +147,19 @@ class MultisiteReviewModule {
   }
 
     /**
+     * Return only those custom modules which were selected via settings form.
      * @return bool
      */
     public function getSpecific() {
-        return $this->specific;
+
+        $result = array();
+        foreach($this->specific as $key => $value) {
+
+            if ($this->specific[$key] != '0') {
+                $result[] = $this->specific[$key];
+            }
+
+        }
+        return $result;
     }
 }

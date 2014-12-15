@@ -10,29 +10,37 @@
  *
  * @see hook_security_checks()
  * @see multisite_review_security_checks()
+ *
  */
 function multisite_review_qa() {
   module_load_include('inc', 'multisite_review', 'multisite_review_module');
 
   $results = array();
 
-  // Loop over the modules and perform the reviews.
-  // @todo Allow the user to choose the modules and reviews.
-    $what_to_review = variable_get('what_to_review');
-  foreach (module_list() as $module_name) {
+
+    // Check if the setting form contain selected modules. If so proceed on these only.
+    $target_modules = array();
+    foreach (module_list() as $module_name) {
+        $module = new MultisiteReviewModule($module_name);
+        $selected_modules = $module->getSpecific();
+        if(!empty($selected_modules)) {
+            $target_modules = $selected_modules;
+        }
+
+        else {
+            $target_modules = module_list();
+        }
+    }
+    // Loop over the modules and perform the reviews.
+  foreach ($target_modules as $module_name) {
     $module = new MultisiteReviewModule($module_name);
 
-      // If Multisite Review setting form specifies a specific module/feature only perform review on that one .
-      $specific = $module->getSpecific();
-      if(!empty($specific)) {
-      if ($module->getName() != $specific) {
-          continue;
-      }
-      }
     // Only check custom modules.
     if (!$module->isCustom()) {
       continue;
+
     }
+
      // Call all reviews declared in the hook and found in reviews folder.
     foreach (module_invoke_all('multisite_review_reviews') as $review => $info) {
       // Include the .inc file from reviews folder if it has been specified.
@@ -52,6 +60,7 @@ function multisite_review_qa() {
 
   return array('result' => empty($results), 'value' => $results);
 }
+
 
 /**
  * Help callback for Security Review. Provides help for the QA check.
@@ -118,3 +127,4 @@ function multisite_review_qa_help($check = NULL, $skipped_message = NULL) {
 
   return $element;
 }
+
