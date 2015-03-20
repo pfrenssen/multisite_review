@@ -17,10 +17,19 @@ interface MultisiteQaReviewInterface {
    */
   public function runTest();
 
+  /**
+   * Returns help messages related to the generated errors.
+   */
   public function help($component = 'general');
 
+  /**
+   * Store a message for in the report.
+   */
   public function setMessage($message, $log_level = 'notice', $component = 'general');
 
+  /**
+   * Returns all set messages.
+   */
   public function getMessages();
 }
 
@@ -37,6 +46,9 @@ abstract class MultisiteQaReview {
    * e.g. module, feature or theme.
    */
   public static $extensionTypes = NULL;
+  /**
+   * Construct: Set the extension under test as a property.
+   */
   public function __construct($extension) {
     $this->extension = $extension;
     $this->setMessage(dt("Checking @extension with '@name'.", array(
@@ -45,11 +57,21 @@ abstract class MultisiteQaReview {
     )), 'info');
   }
 
+  /**
+   * Build debendencies.
+   *
+   * Returns a list of all the extentensions that should be enabled for this
+   * test to be able to run.
+   */
   public function getDependencies() {
     return array();
     // If you need the module to be enabled:
     // return array($this->extension->name);
   }
+
+  /**
+   * Save the messages.
+   */
   public function setMessage($message, $log_level = 'notice', $component = 'general') {
     $this->messages[] = array(
       'message' => $message,
@@ -57,17 +79,19 @@ abstract class MultisiteQaReview {
       'component' => $component,
     );
   }
+  /**
+   * Return all messages.
+   */
   public function getMessages() {
     return $this->messages;
   }
 
-  function help($component = 'general') {
-    switch ($component) {
-      default:
-        $description = '';
-        break;
-    }
-    return $description;
+  /**
+   * Return help for set messages.
+   *
+   * The actual implementation is left to subclasses.
+   */
+  public function help($component = 'general') {
+    return '';
   }
 }
-

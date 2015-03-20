@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *
+ * Builds a code review report.
  */
 
 /**
@@ -21,7 +21,7 @@ const MULTISITE_REVIEW_MULTISITE_VERSION = '1.7';
 
 require_once __DIR__ . '/multisite_review.review.inc';
 
-/*
+/**
  * Implements hook_drush_command().
  */
 function multisite_review_drush_command() {
@@ -37,7 +37,7 @@ function multisite_review_drush_command() {
       // @todo
       'dynamic-analysis' => 'Activate the dynamic analysis checks. (defaults to static analysis only)',
       // @todo
-      'checks' => 'Provide an explicit list of checks to run. Defaults to all.'
+      'checks' => 'Provide an explicit list of checks to run. Defaults to all.',
     ),
     'aliases' => array('cr'),
   );
@@ -45,6 +45,9 @@ function multisite_review_drush_command() {
 
 }
 
+/**
+ * Drush command validation callback: code review.
+ */
 function drush_multisite_review_code_review_validate() {
   $args = pm_parse_arguments(func_get_args());
 
@@ -54,12 +57,13 @@ function drush_multisite_review_code_review_validate() {
   drush_multisite_review_classify_extensions($args, $extensions, $extension_info);
   $unknown = array_diff($args, $extensions);
 
+  // Bail out is the user specified an non-existing extension.
   if (!empty($unknown)) {
     foreach ($unknown as $key => $name) {
       drush_log(dt('!extension was not found.', array('!extension' => $name)), 'warning');
     }
   }
-
+  // Bail out if no extension provided on the commandline.
   if (empty($extensions)) {
     drush_log(dt('Please supply a valid extension to test.'), 'warning');
     return FALSE;
@@ -70,14 +74,7 @@ function drush_multisite_review_code_review_validate() {
 }
 
 /**
- * Classify extensions as modules, themes, features or unknown.
- *
- * @param $extensions
- *   Array of extension names, by reference.
- * @param $modules
- *   Empty array to be filled with modules in the provided extension list.
- * @param $themes
- *   Empty array to be filled with themes in the provided extension list.
+ * Classify extensions as modules, themes or features.
  */
 function drush_multisite_review_classify_extensions(&$extensions, &$extension_list, $extension_info) {
   _drush_pm_expand_extensions($extensions, $extension_info);
@@ -102,6 +99,11 @@ function drush_multisite_review_classify_extensions(&$extensions, &$extension_li
   }
 }
 
+/**
+ * Drush command callback: Code review.
+ *
+ * @todo Clean this up, complexity is too high.
+ */
 function drush_multisite_review_code_review() {
   module_load_include('inc', 'multisite_review');
 
@@ -114,7 +116,7 @@ function drush_multisite_review_code_review() {
     $test->runTest();
   }
 
-  // Aggregate results
+  // Aggregate results.
   $verbose = drush_get_context('DRUSH_VERBOSE');
   // Show notices, etc. by setting verbose mode for drush_log().
   drush_set_context('DRUSH_VERBOSE', TRUE);
@@ -150,6 +152,9 @@ function drush_multisite_review_code_review() {
   return TRUE;
 }
 
+/**
+ * Build a list of tests to run.
+ */
 function multisite_review_build_list_of_tests(&$dependencies) {
   $extensions_info = drush_get_context('MULTISITE_REVIEW_EXTENSION_INFO');
   $extensions_list = drush_get_context('MULTISITE_REVIEW_EXTENSIONS');

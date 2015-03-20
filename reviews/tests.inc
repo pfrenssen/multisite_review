@@ -12,6 +12,9 @@ class MultisiteReviewTests extends MultisiteQaReview implements MultisiteQaRevie
   public static $extensionTypes = array('feature', 'module');
   public static $name = 'Tests';
 
+  /**
+   * Run the test.
+   */
   public function runTest() {
     $path = dirname($this->extension->filename);
     // Check if the module has a 'tests' folder.

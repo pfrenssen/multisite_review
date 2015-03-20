@@ -11,7 +11,10 @@
 class MultisiteReviewIcon extends MultisiteQaReview implements MultisiteQaReviewInterface {
   public static $extensionTypes = array('feature');
   public static $name = 'Check icon';
-  function runTest() {
+  /**
+   * Run the test.
+   */
+  public function runTest() {
     $filename = $this->extension->name . '_icon.png';
     $path = dirname($this->extension->filename) . '/' . $filename;
     if (!file_exists($path)) {
@@ -21,4 +24,3 @@ class MultisiteReviewIcon extends MultisiteQaReview implements MultisiteQaReview
     }
   }
 }
-

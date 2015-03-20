@@ -7,17 +7,14 @@
 
 /**
  * Performs automated review of the given module's exported user permissions.
- *
- * @param MultisiteReviewModule $module
- *   The machine name of the module to review.
- *
- * @return array
- *   An array of failures.
  */
 class MultisiteReviewUserPermissions extends MultisiteQaReview implements MultisiteQaReviewInterface {
   public static $extensionTypes = array('feature');
   public static $name = 'User permissions';
 
+  /**
+   * Run the test.
+   */
   public function runTest() {
     // A list of permissions that should not be exported.
     $permission_blacklist = array(

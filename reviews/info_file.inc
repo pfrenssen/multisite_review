@@ -12,6 +12,9 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
   public static $extensionTypes = array('feature', 'module', 'theme');
   public static $name = 'Info file';
 
+  /**
+   * Run the test.
+   */
   public function runTest() {
     $this->checkRequiredKeys();
 
@@ -27,8 +30,9 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
   }
 
   /**
-   * Define a list of required keys. These are all specified in the custom
-   * feature development guidelines.
+   * Define a list of required keys.
+   *
+   * These are all specified in the custom feature development guidelines.
    * @see https://webgate.ec.europa.eu/fpfis/wikis/display/MULTISITE/Build+custom+features
    */
   public function requiredKeys() {
@@ -39,8 +43,8 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
       'package',
       'version',
     );
-    // Features also require a 'features' key which lists the components that are
-    // exported in the feature.
+    // Features also require a 'features' key which lists the components
+    // that are exported in the feature.
     if ($this->extension->extension_type == 'feature') {
       $required_keys[] = 'features';
     }
@@ -66,6 +70,8 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
   }
 
   /**
+   * Additional check for features.
+   *
    * If the module is a feature, check for some specific key/value pairs that
    * are required according to the guidelines:
    * - the minimum PHP version.
@@ -127,6 +133,9 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
     }
   }
 
+  /**
+   * Check the multisite platform version.
+   */
   public function checkMultisiteVersion() {
     $info = $this->extension->info;
     if (!isset($info['multisite_version'])) {

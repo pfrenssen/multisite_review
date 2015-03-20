@@ -6,7 +6,7 @@
  */
 
 /**
- * 
+ * Test fields exported by features module.
  */
 class MultisiteReviewExportedFields extends MultisiteQaReview implements MultisiteQaReviewInterface {
   public static $extensionTypes = array('feature');
@@ -15,7 +15,7 @@ class MultisiteReviewExportedFields extends MultisiteQaReview implements Multisi
   /**
    * Performs automated review of the given module's exported fields.
    */
-  function runTest() {
+  public function runTest() {
     // Check if the feature exports fields. Skip the review if it doesn't.
     $info = $this->extension->info;
     if (empty($info['features']['field_base'])) {
@@ -57,7 +57,10 @@ class MultisiteReviewExportedFields extends MultisiteQaReview implements Multisi
     }
   }
 
-  function help($component = 'general') {
+  /**
+   * Provide help messages.
+   */
+  public function help($component = 'general') {
     $description = NULL;
     switch ($component) {
       case 'lock':
@@ -66,8 +69,8 @@ class MultisiteReviewExportedFields extends MultisiteQaReview implements Multisi
         $description .= dt('Read more about locking fields on the wiki: !link', array(
           '!link' => 'http://todo')
         ) . PHP_EOL;
-
         break;
+
       case 'general':
       default:
         break;

@@ -18,9 +18,12 @@ class MultisiteReviewInstallFile extends MultisiteQaReview implements MultisiteQ
   public static $extensionTypes = array('feature');
   public static $name = 'Info file';
 
+  /**
+   * Run the test.
+   */
   public function runTest() {
-    // Check if the module has an install file. Skip the rest of the review if it
-    // is missing.
+    // Check if the module has an install file. Skip the rest of the review when
+    // missing.
     $filename = $this->extension->name . '.install';
     $install_path = dirname($this->extension->filename) . '/' . $filename;
 
@@ -64,7 +67,7 @@ class MultisiteReviewInstallFile extends MultisiteQaReview implements MultisiteQ
       $function_scope = '';
       $file = new SplFileObject($install_path);
       $file->seek($reflection->getStartLine() - 1);
-      for($i = $reflection->getStartLine() ; !$file->eof() && $i < $reflection->getEndLine(); $i++) {
+      for ($i = $reflection->getStartLine(); !$file->eof() && $i < $reflection->getEndLine(); $i++) {
         $function_scope .= $file->current();
         $file->next();
       }

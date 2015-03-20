@@ -17,6 +17,9 @@ class MultisiteReviewFeaturesComponents extends MultisiteQaReview implements Mul
     'menu_links',
   );
 
+  /**
+   * Run the test.
+   */
   public function runTest() {
     // A list of Features components that should not be exported.
 
@@ -32,4 +35,3 @@ class MultisiteReviewFeaturesComponents extends MultisiteQaReview implements Mul
     }
   }
 }
-
