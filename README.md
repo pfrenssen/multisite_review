@@ -21,3 +21,9 @@ The Multisite Platform (aka FPFIS) is a web platform built on Drupal 7 that host
 - You get a list of all failures that were found against all enabled modules and features. These are grouped by module, so search for the one that you're reviewing and reap the results.
 
 A list of supported reviews can be found on the [FPFIS wiki](https://webgate.ec.europa.eu/fpfis/wikis/pages/viewpage.action?pageId=84756238). This is only accessible to developers that are registered with the European Commission.
+
+
+# Drush version
+
+If you want to run the tests using Drush instead of the Security Review module
+please use the 7.x-2.x branch.
