@@ -35,9 +35,9 @@ class MultisiteReviewModule {
    * @var string
    */
   protected $path;
-    /*
-     * Modules selected to be reviewed from the setting form
-     */
+  /*
+   * Modules selected to be reviewed from the setting form
+   */
   protected $specific;
   /**
    * Constructs a Module object.
@@ -146,20 +146,22 @@ class MultisiteReviewModule {
     return (bool) preg_match('/\/custom\//', $this->path);
   }
 
-    /**
-     * Return only those custom modules which were selected via settings form.
-     * @return bool
-     */
-    public function getSpecific() {
+  /**
+   * Return only those custom modules which were selected via settings form.
+   *
+   * @return bool
+   */
+  public function getSpecific() {
 
-        $result = array();
-        foreach($this->specific as $key => $value) {
+    $result = array();
+    foreach ($this->specific as $key => $value) {
 
-            if ($this->specific[$key] != '0') {
-                $result[] = $this->specific[$key];
-            }
+      if ($this->specific[$key] != '0') {
+        $result[] = $this->specific[$key];
+      }
 
-        }
-        return $result;
     }
+    return $result;
+  }
+
 }
