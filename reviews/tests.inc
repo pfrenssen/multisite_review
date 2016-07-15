@@ -27,5 +27,31 @@ class MultisiteReviewTests extends MultisiteQaReview implements MultisiteQaRevie
     if (!glob($path . '/tests/*.test')) {
       $this->setMessage(dt('There are no files matching the pattern "*.test" in the "/tests" folder.'), 'warning');
     }
+
+    // Check the info file for tests.
+    if ($this->extension->extension_type != 'theme') {
+      $this->checkTests();
+    }
   }
+
+  /**
+   * Check if the module has at least one test.
+   */
+  public function checkTests() {
+    $info = $this->extension->info;
+
+    $has_tests = FALSE;
+    if (array_key_exists('files', $info)) {
+      foreach ($info['files'] as $file) {
+        if (substr($file, -5) === '.test') {
+          $has_tests = TRUE;
+          break;
+        }
+      }
+    }
+    if (!$has_tests) {
+      $this->setMessage(dt('There are no tests added to the files[] array.'), 'warning');
+    }
+  }
+
 }

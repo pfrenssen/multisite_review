@@ -22,6 +22,32 @@ const MULTISITE_REVIEW_MULTISITE_VERSION = '1.7';
 require_once __DIR__ . '/multisite_review.review.inc';
 
 /**
+ * Gets the php version to test for.
+ *
+ * @return string
+ *   The php version.
+ */
+function _get_php_version() {
+  if (function_exists('drush_get_option')) {
+    return drush_get_option('php-version', MULTISITE_REVIEW_PHP_VERSION);
+  }
+  return MULTISITE_REVIEW_PHP_VERSION;
+}
+
+/**
+ * Gets the multisite version to test for.
+ *
+ * @return string
+ *   The multisite version.
+ */
+function _get_multisite_version() {
+  if (function_exists('drush_get_option')) {
+    return drush_get_option('multisite-version', MULTISITE_REVIEW_MULTISITE_VERSION);
+  }
+  return MULTISITE_REVIEW_MULTISITE_VERSION;
+}
+
+/**
  * Implements hook_drush_command().
  */
 function multisite_review_drush_command() {
@@ -38,6 +64,10 @@ function multisite_review_drush_command() {
       'dynamic-analysis' => 'Activate the dynamic analysis checks. (defaults to static analysis only)',
       // @todo
       'checks' => 'Provide an explicit list of checks to run. Defaults to all.',
+      'exclude-checks' => 'Comma separated list of checks to exclude',
+      'php-version' => 'The php version to check for.',
+      'multisite-version' => 'The multisite version to check for.',
+      'break-cphp' => 'To break or not on cphp.',
     ),
     'aliases' => array('cr'),
   );
@@ -146,6 +176,12 @@ function drush_multisite_review_code_review() {
       }
     }
   }
+
+  // If there was any error. Throw an exception to make cphp break.
+  if (isset($previous_name) && drush_get_option('break-cphp')) {
+    throw new \Exception('There are some checks that did not pass tests.');
+  }
+
   // Restore verbosity level.
   drush_set_context('DRUSH_VERBOSE', $verbose);
 
@@ -159,6 +195,11 @@ function multisite_review_build_list_of_tests(&$dependencies) {
   $extensions_info = drush_get_context('MULTISITE_REVIEW_EXTENSION_INFO');
   $extensions_list = drush_get_context('MULTISITE_REVIEW_EXTENSIONS');
   $check_list = multisite_review_get_checks();
+
+  // Get the list of checks.
+  if ($exclude = drush_get_option('exclude-checks')) {
+    $check_list = array_flip(array_diff(array_flip($check_list), explode(',', $exclude)));
+  }
 
   foreach ($extensions_list as $extension_name) {
     foreach ($check_list as $machine_name => $class_name) {
