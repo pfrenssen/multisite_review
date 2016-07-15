@@ -17,14 +17,10 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
    */
   public function runTest() {
     $this->checkRequiredKeys();
-
     if ($this->extension->extension_type == 'feature') {
       $this->checkFeatureKeys();
+      $this->checkMultisiteVersion();
     }
-    if ($this->extension->extension_type != 'theme') {
-      $this->checkTests();
-    }
-    $this->checkMultisiteVersion();
     $this->checkDependencies();
     $this->checkTaxonomy();
   }
@@ -41,7 +37,6 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
       'description',
       'name',
       'package',
-      'version',
     );
     // Features also require a 'features' key which lists the components
     // that are exported in the feature.
@@ -80,32 +75,12 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
   public function checkFeatureKeys() {
     $info = $this->extension->info;
     $required_values = array();
-    $required_values['php'] = MULTISITE_REVIEW_PHP_VERSION;
+    $required_values['php'] = _get_php_version();
     $required_values['features']['features_api'][0] = MULTISITE_REVIEW_FEATURES_API_VERSION;
 
     if ($missing_values = drupal_array_diff_assoc_recursive($required_values, $info)) {
       $missing_keys = implode(', ', array_keys($missing_values));
       $this->setMessage(dt('Missing required key/value pairs in the .info file: @keys', array('@keys' => $missing_keys)), 'warning');
-    }
-  }
-
-  /**
-   * Check if the module has at least one test.
-   */
-  public function checkTests() {
-    $info = $this->extension->info;
-
-    $has_tests = FALSE;
-    if (array_key_exists('files', $info)) {
-      foreach ($info['files'] as $file) {
-        if (substr($file, -5) === '.test') {
-          $has_tests = TRUE;
-          break;
-        }
-      }
-    }
-    if (!$has_tests) {
-      $this->setMessage(dt('There are no tests added to the files[] array.'), 'warning');
     }
   }
 
@@ -142,10 +117,10 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
       $this->setMessage(dt("The multisite version is not set."), 'warning');
       return;
     }
-    if ($info['multisite_version'] != MULTISITE_REVIEW_MULTISITE_VERSION) {
+    if ($info['multisite_version'] != _get_multisite_version()) {
       $this->setMessage(dt("The multisite version is incorrect (actual @version, expected @expected).", array(
         '@version' => $info['multisite_version'],
-        '@expected' => MULTISITE_REVIEW_MULTISITE_VERSION,
+        '@expected' => _get_multisite_version(),
       )), 'warning');
     }
   }
