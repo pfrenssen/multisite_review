@@ -37,7 +37,7 @@ class MultisiteReviewInstallFile extends MultisiteQaReview implements MultisiteQ
 
     // Check if the required hook implementations are present and documented
     // correctly.
-    $required_hooks = array('enable', 'disable', 'install', 'uninstall');
+    $required_hooks = array('enable', 'disable');
     foreach ($required_hooks as $hook) {
       // Check if the hook implementation is present.
       if (!function_exists($this->extension->name . '_' . $hook)) {

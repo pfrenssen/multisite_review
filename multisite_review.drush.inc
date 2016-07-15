@@ -170,7 +170,7 @@ function drush_multisite_review_code_review() {
         if ($name <> $previous_name) {
           drush_print(PHP_EOL . $name . ':');
         }
-        drush_log("  " . $message['message'], $message['log_level']);
+        drush_log($name . " --> " . $message['message'], $message['log_level']);
 
         $previous_name = $name;
       }
