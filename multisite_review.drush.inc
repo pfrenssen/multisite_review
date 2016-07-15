@@ -86,7 +86,7 @@ function drush_multisite_review_code_review_validate() {
 
   // Filter modules not in sites/all.
   foreach ($extension_info as $key => $module) {
-    if (drush_get_option('check-directory') && strpos($module->filename, drush_get_option('show-success')) === FALSE) {
+    if (drush_get_option('check-directory') && strpos($module->filename, drush_get_option('check-directory')) === FALSE) {
       unset($extension_info[$key]);
     }
   }
