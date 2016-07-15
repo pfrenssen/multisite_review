@@ -68,6 +68,7 @@ function multisite_review_drush_command() {
       'php-version' => 'The php version to check for.',
       'multisite-version' => 'The multisite version to check for.',
       'break-cphp' => 'To break or not on cphp.',
+      'check-directory' => 'The directory to check for (example: sites/all)',
     ),
     'aliases' => array('cr'),
   );
@@ -85,7 +86,7 @@ function drush_multisite_review_code_review_validate() {
 
   // Filter modules not in sites/all.
   foreach ($extension_info as $key => $module) {
-    if (strpos($module->filename, 'sites/all/') === FALSE) {
+    if (drush_get_option('check-directory') && strpos($module->filename, drush_get_option('show-success')) === FALSE) {
       unset($extension_info[$key]);
     }
   }
