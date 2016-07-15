@@ -75,8 +75,14 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
   public function checkFeatureKeys() {
     $info = $this->extension->info;
     $required_values = array();
-    $required_values['php'] = _get_php_version();
     $required_values['features']['features_api'][0] = MULTISITE_REVIEW_FEATURES_API_VERSION;
+
+    if (!isset($info['php'])) {
+      $this->setMessage(dt('Php value is missing from the info file.', array(), 'warning'));
+    }
+    if (floatval(_get_php_version()) < floatval($info['php'])) {
+      $this->setMessage(dt('Php value (@value) is less then the required value: @requirement', array('@value' => $info['php'], '@requirement' => _get_php_version())), 'warning');
+    }
 
     if ($missing_values = drupal_array_diff_assoc_recursive($required_values, $info)) {
       $missing_keys = implode(', ', array_keys($missing_values));

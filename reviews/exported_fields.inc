@@ -44,14 +44,14 @@ class MultisiteReviewExportedFields extends MultisiteQaReview implements Multisi
         return;
       }
       // Check if the field is locked.
-      if (empty($field_export['field_config']['locked'])) {
+      if (empty($field_export['locked'])) {
         $this->setMessage(t('Field "@field" is not locked.', array('@field' => $field_name)), 'warning', 'lock');
       }
       else {
         $this->setMessage(t('Field "@field" is locked.', array('@field' => $field_name)), 'info', 'lock');
       }
       // If it is a date field, check that it is configured to use UNIX time.
-      if ($field_export['field_config']['module'] == 'date' && $field_export['field_config']['type'] != 'datestamp') {
+      if ($field_export['module'] == 'date' && $field_export['type'] != 'datestamp') {
         $this->setMessage(t('The @field field does not use UNIX time.', array('@field' => $field_name)), 'warning', 'datetime');
       }
     }
