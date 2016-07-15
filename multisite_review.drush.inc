@@ -67,6 +67,7 @@ function multisite_review_drush_command() {
       'exclude-checks' => 'Comma separated list of checks to exclude',
       'php-version' => 'The php version to check for.',
       'multisite-version' => 'The multisite version to check for.',
+      'break-cphp' => 'To break or not on cphp.',
     ),
     'aliases' => array('cr'),
   );
@@ -175,6 +176,12 @@ function drush_multisite_review_code_review() {
       }
     }
   }
+
+  // If there was any error. Throw an exception to make cphp break.
+  if (isset($previous_name) && drush_get_option('break-cphp')) {
+    throw new \Exception('There are some checks that did not pass tests.');
+  }
+
   // Restore verbosity level.
   drush_set_context('DRUSH_VERBOSE', $verbose);
 
