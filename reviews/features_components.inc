@@ -29,7 +29,7 @@ class MultisiteReviewFeaturesComponents extends MultisiteQaReview implements Mul
         foreach ($components as $component) {
           $this->setMessage(t('The module exports the blacklisted component !component.', array(
             '!component' => $component,
-          )), 'warning');
+          )), 'error');
         }
       }
     }
