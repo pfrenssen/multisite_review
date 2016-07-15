@@ -78,15 +78,15 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
     $required_values['features']['features_api'][0] = MULTISITE_REVIEW_FEATURES_API_VERSION;
 
     if (!isset($info['php'])) {
-      $this->setMessage(dt('Php value is missing from the info file.', array(), 'warning'));
+      $this->setMessage(dt('Php value is missing from the info file.', array(), 'error'));
     }
     if (floatval(_get_php_version()) < floatval($info['php'])) {
-      $this->setMessage(dt('Php value (@value) is less then the required value: @requirement', array('@value' => $info['php'], '@requirement' => _get_php_version())), 'warning');
+      $this->setMessage(dt('Php value (@value) is less then the required value: @requirement', array('@value' => $info['php'], '@requirement' => _get_php_version())), 'error');
     }
 
     if ($missing_values = drupal_array_diff_assoc_recursive($required_values, $info)) {
       $missing_keys = implode(', ', array_keys($missing_values));
-      $this->setMessage(dt('Missing required key/value pairs in the .info file: @keys', array('@keys' => $missing_keys)), 'warning');
+      $this->setMessage(dt('Missing required key/value pairs in the .info file: @keys', array('@keys' => $missing_keys)), 'error');
     }
   }
 
@@ -99,7 +99,7 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
       if (!empty($info['dependencies']) && in_array($dependency, $info['dependencies'])) {
         $this->setMessage(dt('The dependency on the @dependency module should be removed.', array(
           '@dependency' => $dependency,
-        )), 'warning');
+        )), 'error');
       }
     }
   }
@@ -120,14 +120,14 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
   public function checkMultisiteVersion() {
     $info = $this->extension->info;
     if (!isset($info['multisite_version'])) {
-      $this->setMessage(dt("The multisite version is not set."), 'warning');
+      $this->setMessage(dt("The multisite version is not set."), 'error');
       return;
     }
     if ($info['multisite_version'] != _get_multisite_version()) {
       $this->setMessage(dt("The multisite version is incorrect (actual @version, expected @expected).", array(
         '@version' => $info['multisite_version'],
         '@expected' => _get_multisite_version(),
-      )), 'warning');
+      )), 'error');
     }
   }
 }

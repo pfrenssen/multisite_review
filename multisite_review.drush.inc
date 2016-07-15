@@ -82,6 +82,14 @@ function drush_multisite_review_code_review_validate() {
   $args = pm_parse_arguments(func_get_args());
 
   $extension_info = drush_get_extensions();
+
+  // Filter modules not in sites/all.
+  foreach ($extension_info as $key => $module) {
+    if (strpos($module->filename, 'sites/all/') === FALSE) {
+      unset($extension_info[$key]);
+    }
+  }
+
   $extensions = array();
   // Classify $args in themes, modules, features or unknown.
   drush_multisite_review_classify_extensions($args, $extensions, $extension_info);
@@ -179,7 +187,7 @@ function drush_multisite_review_code_review() {
 
   // If there was any error. Throw an exception to make cphp break.
   if (isset($previous_name) && drush_get_option('break-cphp')) {
-    throw new \Exception('There are some checks that did not pass tests.');
+    drush_set_error('', 'There are some checks that did not pass tests.');
   }
 
   // Restore verbosity level.

@@ -57,7 +57,7 @@ class MultisiteReviewDebug extends MultisiteQaReview implements MultisiteQaRevie
         $this->setMessage(dt('@file contains a debug statement on line(s) @line', array(
           '@file' => basename($path),
           '@line' => implode(',', $statement_on_line),
-        )), 'warning');
+        )), 'error');
       }
     }
   }
