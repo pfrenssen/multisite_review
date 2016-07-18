@@ -87,7 +87,7 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
 
     if ($missing_values = drupal_array_diff_assoc_recursive($required_values, $info)) {
       $missing_keys = implode(', ', array_keys($missing_values));
-      $this->setMessage(dt('Missing required key/value pairs in the .info file: @keys', array('@keys' => $missing_keys)), 'error');
+      $this->setMessage(dt('Missing required key/value pairs in the .info file or : @keys', array('@keys' => $missing_keys)), 'error');
     }
   }
 

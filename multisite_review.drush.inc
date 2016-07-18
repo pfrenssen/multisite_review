@@ -160,13 +160,14 @@ function drush_multisite_review_code_review() {
   // Show notices, etc. by setting verbose mode for drush_log().
   drush_set_context('DRUSH_VERBOSE', TRUE);
   $printed_descriptions = array();
-  $previous_name = '';
+  $has_errors = FALSE;
   foreach ($tests_to_run as $test) {
     $messages = $test->getMessages();
     foreach ($messages as $message) {
       $show_success = drush_get_option('show-success');
       $log_levels = array('notice', 'message', 'info');
       if (!in_array($message['log_level'], $log_levels) || $show_success) {
+        $has_errors = TRUE;
         // If needed, print some information about the error.
         if (empty($printed_descriptions[$test::$name][$message['component']])) {
           $printed_descriptions[$test::$name][$message['component']] = TRUE;
@@ -175,19 +176,13 @@ function drush_multisite_review_code_review() {
             drush_print($help);
           }
         }
-        $name = $test->extension->name;
-        if ($name <> $previous_name) {
-          drush_print(PHP_EOL . $name . ':');
-        }
-        drush_log($name . " --> " . $message['message'], $message['log_level']);
-
-        $previous_name = $name;
+        drush_log($test->extension->name . " --> " . $message['message'], $message['log_level']);
       }
     }
   }
 
   // If there was any error. Throw an exception to make cphp break.
-  if (isset($previous_name) && drush_get_option('break-cphp')) {
+  if ($has_errors && drush_get_option('break-cphp')) {
     drush_set_error('', 'There are some checks that did not pass tests.');
   }
 
