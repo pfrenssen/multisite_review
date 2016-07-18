@@ -80,7 +80,8 @@ class MultisiteReviewInfoFile extends MultisiteQaReview implements MultisiteQaRe
     if (!isset($info['php'])) {
       $this->setMessage(dt('Php value is missing from the info file.', array(), 'error'));
     }
-    if (floatval(_get_php_version()) < floatval($info['php'])) {
+
+    if (floatval(_get_php_version()) > floatval($info['php'])) {
       $this->setMessage(dt('Php value (@value) is less then the required value: @requirement', array('@value' => $info['php'], '@requirement' => _get_php_version())), 'error');
     }
 

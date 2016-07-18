@@ -14,7 +14,7 @@ class MultisiteReviewFeaturesComponents extends MultisiteQaReview implements Mul
 
   public $components_blacklist = array(
     'menu_custom',
-    'menu_links',
+   // 'menu_links',
   );
 
   /**
